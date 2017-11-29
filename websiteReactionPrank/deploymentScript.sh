@@ -3,4 +3,6 @@
 
 
 
-scriptlocURL="`
+scriptlocURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/scriptloc.txt"
+
+scriptURL=`curl "$scriptlocURL | grep -v -e '^#' -e'^$' | head -n1`
