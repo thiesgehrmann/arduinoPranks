@@ -47,7 +47,7 @@ function downloadPayloadIfNeeded(){
   local localURL=`cat "$localPayloadURL"`
   local urlDate=`getURLDate "$url"`
 
-
+  echo "$localURL -> $url"
 
     # We have a totally new URL, we should get it no matter what!
   if [ "$url" != "$localURL" ]; then
