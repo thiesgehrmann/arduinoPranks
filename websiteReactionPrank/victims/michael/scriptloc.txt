@@ -1,2 +1,2 @@
 #
-https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/clientSide.sh
+https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/firebaseTest.sh
