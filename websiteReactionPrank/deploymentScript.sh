@@ -63,7 +63,7 @@ function downloadURL(){
   local url="$1"
   local outfile="$2"
   echo "Downloading $url"
-  wget -O "$outfile" "$url"
+  curl -s "$url" > "$outfile"
   chmod +x "$outfile"
 }
 
