@@ -129,9 +129,11 @@ while [ true ]; do
 
   downloadPayloadIfNeeded
 
-  runPayload
+  timeNow=`date '+%s'`
 
-  sleep 15
+  while [ $((date '+%s' - timeNow)) < 15 ]; do
+    runPayload
+  done
 
   let iteration=$((iteration+1))
 
