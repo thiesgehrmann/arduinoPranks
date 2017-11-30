@@ -63,8 +63,8 @@ function downloadURL(){
   local url="$1"
   local outfile="$2"
   echo "Downloading $url"
-  wget -O "$2" "$1"
-  chmod +x "$2"
+  wget -O "$outfile" "$url"
+  chmod +x "$outfile"
 }
 
 function downloadPayloadIfNeeded(){
