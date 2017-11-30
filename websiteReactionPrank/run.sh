@@ -16,12 +16,15 @@ deployURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/
 plistLoc="$launchdDir/prank.plist"
 
 if [ "$victim" == "--clean" ]; then
+  echo "Cleaning up"
   launchctl unload "$plistLoc"
   rm -rf "$prankDir"
-  rm "$plistLoc"
+  rm -rf "$plistLoc"
 
   exit 0;
 fi
+
+echo "Setting up"
 
 mkdir -p "$launchdDir"
 mkdir -p "$prankDir"
