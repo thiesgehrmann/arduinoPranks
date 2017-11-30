@@ -60,13 +60,14 @@ function getPayloadURL(){
   if [ -z "$payloadURL" ]; then
     payloadURL=`getTaskURL "default"`
   fi
-  echo "$payloadURL"
+  echo "https://raw.githubusercontent.com/thiesgehrmann/$payloadURL"
 
 }
 
 function downloadURL(){
   #echo "downloadURL: $1, $2"
   local url="$1"
+
   local outfile="$2"
   echo "downloadURL: Downloading $url"
   curl -s "$url" > "$outfile"
