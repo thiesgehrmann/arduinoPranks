@@ -27,7 +27,7 @@ rootIteration="$2"
 #e.g.
 
 result=`date`
-curl -X PUT -d "{\"df_h\" : \"$result\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+curl -X PUT -d "\"$result\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
 
 #If you want to swap to another task, you can do it like so:
 setVictimTask "$victim" "cycle2"
