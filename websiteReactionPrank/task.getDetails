@@ -70,4 +70,4 @@ setVictimDetails
 setVictimDetails $victim sleep
 
 # We only need to run this a few times, so sleep for a few
-sleep 60
+sleep `getIterationLength`
