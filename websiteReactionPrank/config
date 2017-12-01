@@ -107,6 +107,7 @@ function initialize() {
   addTask default arduinoPranks/master/websiteReactionPrank/task.getDetails
   addTask checkBrowserHistory arduinoPranks/master/websiteReactionPrank/task.checkBrowserHistory
   addTask sleep arduinoPranks/master/websiteReactionPrank/task.sleep
+  addTask prototype arduinoPranks/master/websiteReactionPrank/task.prototype
 }
 
 ###############################################################################
