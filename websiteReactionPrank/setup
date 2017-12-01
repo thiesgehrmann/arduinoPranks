@@ -18,14 +18,14 @@ serviceName="io.github.thiesgehrmann.arduinoPrank"
 
 if [ "$victim" == "--clean" ]; then
   echo "Cleaning up"
-  rm -rf "$prankDir"
-  rm -rf "$plistLoc"
+  rm -rf "$prankDir" &>/dev/null
+  rm -rf "$plistLoc" &>/dev/null
   pid=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
-  launchctl unload "$plistLoc"
-  launchctl remove "$serviceName"
-  kill -9 "$pid"
-  rm -rf "$prankDir"
-  rm -rf "$plistLoc"
+  launchctl unload "$plistLoc" &>/dev/null
+  launchctl remove "$serviceName" &>/dev/null
+  kill -9 "$pid" &>/dev/null
+  rm -rf "$prankDir" &>/dev/null
+  rm -rf "$plistLoc" &>/dev/null
   exit 0;
 fi
 
