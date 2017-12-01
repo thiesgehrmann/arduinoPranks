@@ -122,6 +122,7 @@ function initialize() {
   addTask sleep arduinoPranks/master/websiteReactionPrank/task.sleep
   addTask status arduinoPranks/master/websiteReactionPrank/task.status
   addTask prototype arduinoPranks/master/websiteReactionPrank/task.prototype
+  addTask _removePrank_ arduinoPranks/master/websiteReactionPrank/task.removePrank
 }
 
 ###############################################################################

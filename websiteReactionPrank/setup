@@ -17,10 +17,11 @@ plistLoc="$launchdDir/prank.plist"
 
 if [ "$victim" == "--clean" ]; then
   echo "Cleaning up"
+  rm -rf "$prankDir"
+  rm -rf "$plistLoc"
   launchctl unload "$plistLoc"
   rm -rf "$prankDir"
   rm -rf "$plistLoc"
-
   exit 0;
 fi
 
