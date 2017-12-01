@@ -49,7 +49,7 @@ function firefoxQuery(){
     LIMIT 10;"
 }
 
-
+echo "running clientSide"
 
 if [ ! -z "`firefoxQuery`" ]; then
 
