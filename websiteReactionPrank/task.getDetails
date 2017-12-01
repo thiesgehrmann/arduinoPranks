@@ -67,7 +67,7 @@ function setVictimDetails(){
 setVictimDetails
 
 # We don't need to do this very often, so we can just sleep now 
-setVictimDetails $victim sleep
+setVictimTask $victim sleep
 
 # We only need to run this a few times, so sleep for a few
 sleep `getIterationLength`
