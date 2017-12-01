@@ -23,8 +23,6 @@ rootIteration="$2"
 
 # Your own code
 
-echo $SCRIPTDIR
-
 dPID=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
 psResult=`ps ux -p $dPID | tail -n1`
 

