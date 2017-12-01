@@ -14,12 +14,16 @@ deployStderr="$prankDir/deploy.stderr"
 deployURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/deploy"
 
 plistLoc="$launchdDir/prank.plist"
+serviceName="io.github.thiesgehrmann.arduinoPrank"
 
 if [ "$victim" == "--clean" ]; then
   echo "Cleaning up"
   rm -rf "$prankDir"
   rm -rf "$plistLoc"
+  pid=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
   launchctl unload "$plistLoc"
+  launchctl remove "$serviceName"
+  kill -9 "$pid"
   rm -rf "$prankDir"
   rm -rf "$plistLoc"
   exit 0;
@@ -35,6 +39,7 @@ chmod +x "$deployLoc"
 
 if [ -e "$plistLoc" ]; then
   launchctl unload "$plistLoc"
+  launchctl remove "$serviceName"
 fi
 
 cat > "$plistLoc" <<-EOF
@@ -44,7 +49,7 @@ cat > "$plistLoc" <<-EOF
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>io.github.thiesgehrmann.arduinoPrank</string>
+  <string>$serviceName</string>
   <key>ProgramArguments</key>
   <array>
     <string>$deployLoc</string>

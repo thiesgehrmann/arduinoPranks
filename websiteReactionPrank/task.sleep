@@ -15,6 +15,7 @@ source "$SCRIPTDIR/deploy"
 
 sleepTime=3600 #1 hour
 sleepTime=60 #1 minute
+sleeptime=`getIterationLength`
 
 ###############################################################################
 # Write when we will wake again
