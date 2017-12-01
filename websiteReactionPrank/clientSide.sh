@@ -46,7 +46,7 @@ function firefoxQuery(){
 
 
 
-if [ ! -z `firefoxQuery` ] && [ $RANDOM -lt 10000 ]; then
+if [ ! -z `firefoxQuery` ]; then
   say "Get back to work!"
 fi
 
