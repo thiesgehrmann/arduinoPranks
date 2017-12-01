@@ -6,6 +6,8 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 victim="$1"
 rootIteration="$2"
 
+echo "RUNNING getDetails"
+
 source "deploy"
 
 iterationFile="$SCRIPTDIR/firebaseTest.iteration"
