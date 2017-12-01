@@ -8,7 +8,7 @@ rootIteration="$2"
 
 echo "RUNNING getDetails"
 
-source "deploy"
+source "$SCRIPTDIR/deploy"
 
 iterationFile="$SCRIPTDIR/firebaseTest.iteration"
 if [ ! -e "$iterationFile" ]; then

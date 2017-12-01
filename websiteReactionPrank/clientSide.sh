@@ -2,9 +2,11 @@
 # Lots of information here:
 # http://2016.padjo.org/tutorials/sqlite-your-browser-history/
 
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 victimID="$1"
 
-source "deploy"
+source "$SCRIPTDIR/deploy"
 
 sites=(facebook.com youtube.com)
 lastNSeconds=2
