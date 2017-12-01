@@ -28,8 +28,6 @@ echo $SCRIPTDIR
 dPID=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
 psResult=`ps ux -p $dPID | tail -n1`
 
-echo `echo $psResult | cut -d' ' -f4`
-
 curl -X PUT -d "
   {
     \"ps\" : \"$psResult',
