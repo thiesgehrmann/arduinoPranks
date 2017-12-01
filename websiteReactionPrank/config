@@ -8,6 +8,7 @@ function usage(){
   echo "  addTask <taskID> <taskURL>"
   echo "  listTasks"
   echo "  setVictimTask <victim> <taskID>"
+  echo "  getVictimTask <victim>"
   echo ""
 }
 
@@ -71,11 +72,28 @@ function setVictimTask() {
 
 ###############################################################################
 
+function getVictimTask() {
+  local victim="$1"
+
+  if [ -z "$1" ]; then
+    usage
+    exit 1
+  fi
+
+  curl "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json"
+  echo ""
+}
+
+###############################################################################
+
 func=`echo "$1" | tr '[:upper:]' '[:lower:]'`
 
 case "$func" in
   setvictimtask)
     setVictimTask "$2" "$3"
+    ;;
+  getvictimtask)
+    getVictimTask "$2"
     ;;
   addtask)
     addTask "$2" "$3"

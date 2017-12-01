@@ -4,6 +4,8 @@
 
 victimID="$1"
 
+source "deploy"
+
 sites=(facebook.com youtube.com)
 lastNSeconds=2
 
@@ -49,10 +51,12 @@ function firefoxQuery(){
 
 
 
-if [ ! -z `firefoxQuery` ]; then
+if [ ! -z "`firefoxQuery`" ]; then
+
+  echo "Found bad browsing behaviour!"
 
   currentTime=`date '+%s'`
-  curl -s -X PUT -d "$currentTime" "https://${firebaseProject}.firebaseio.com/victims/$victim/YT_FB_visit.json"
+  curl -s -X PUT -d "$currentTime" "https://${firebaseProject}.firebaseio.com/victims/$victimID/YT_FB_visit.json"
 fi
 
 sleep 1.1;
