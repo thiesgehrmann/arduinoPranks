@@ -17,17 +17,6 @@ localPayloadFile="$SCRIPTDIR/payload"
 localPayloadETagFile="$SCRIPTDIR/payload.etag"
 localPayloadURLFile="$SCRIPTDIR/payload.url"
 
-jq="$SCRIPTDIR/jq"
-
-###################################################################
-
-# Remove the payload and local values
-
-rm -rf "$localPayloadFile" "$localPayloadETagFile" "$localPayloadURLFile"
-touch "$localPayloadFile"
-touch "$localPayloadETagFile"
-touch "$localPayloadURLFile"
-
 ###################################################################
 
 function installJQ() {
@@ -139,6 +128,16 @@ if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
     victim="$USER.`hostname`"
   fi
   victim="`echo $victim | tr '.#[]/$' '______'`"
+
+  ###################################################################
+
+  # Remove the payload and local values
+  rm -rf "$localPayloadFile" "$localPayloadETagFile" "$localPayloadURLFile"
+  touch "$localPayloadFile"
+  touch "$localPayloadETagFile"
+  touch "$localPayloadURLFile"
+
+  ###################################################################
 
   iteration=1
   
