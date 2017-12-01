@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# REST API
+# https://firebase.google.com/docs/reference/rest/database/
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+thisTaskID="sleep"
+
+victim="$1"
+rootIteration="$2"
+
+echo "RUNNING getDetails"
+
+source "$SCRIPTDIR/deploy"
+
+sleepTime=3600 #1 hour
+
+###############################################################################
+# Write when we will wake again
+
+startSleep=`date '+%s'`
+stopSleep=$((startSleep + sleepTime))
+curl -X PUT -d "{\"startedSleepingAt\" : \"$startSleep\", \"stopSleepingAt\" : \"$stopSleep\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+
+sleep $sleepTime
+
