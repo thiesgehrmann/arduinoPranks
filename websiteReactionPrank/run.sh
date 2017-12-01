@@ -8,7 +8,7 @@ homedir="$HOME"
 launchdDir="$homedir/Library/LaunchAgents"
 prankDir="$homedir/.prank"
 
-deployLoc="$prankDir/deploy.sh"
+deployLoc="$prankDir/deploy"
 deployStdout="$prankDir/deploy.stdout"
 deployStderr="$prankDir/deploy.stderr"
 deployURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/deploy"
