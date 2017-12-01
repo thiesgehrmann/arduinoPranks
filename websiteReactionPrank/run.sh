@@ -11,7 +11,7 @@ prankDir="$homedir/.prank"
 deployLoc="$prankDir/deploy.sh"
 deployStdout="$prankDir/deploy.stdout"
 deployStderr="$prankDir/deploy.stderr"
-deployURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/deploymentScript.sh"
+deployURL="https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/deploymentFirebaseScript.sh"
 
 plistLoc="$launchdDir/prank.plist"
 

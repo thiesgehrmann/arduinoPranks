@@ -5,7 +5,7 @@
 sites=(facebook.com youtube.com)
 
 function safariQuery() {
-  sqlite3 ~/Library/Safari/History.db "
+  sqlite3 "$HOME/Library/Safari/History.db" "
     SELECT visit_time, title, url
     FROM history_visits
     INNER JOIN history_items
@@ -13,22 +13,41 @@ function safariQuery() {
     WHERE
       url like '%facebook.com%' OR
       url like '%youtube.com%'
-   ORDER BY visit_time ASC;"
+   ORDER BY visit_time DESC
+   LIMIT 10;"
 }
 
 function chromeQuery() {
-  sqlite3 "~/Library/Application Support/Google/Chrome/Default/History" "
+  cp "$HOME/Library/Application Support/Google/Chrome/Default/History" "$HOME/Library/Application Support/Google/Chrome/Default/History.copy"
+  sqlite3 "$HOME/Library/Application Support/Google/Chrome/Default/History.copy" "
     SELECT last_visit_time, title, url
     FROM urls
-    ORDER BY last_visit_time ASC;"
+    WHERE
+      last_visit_time > $(( (`date '+%s'` -2) * 10000000)) AND (
+      url like '%facebook.com%' OR
+      url like '%youtube.com%' )
+    ORDER BY last_visit_time DESC
+    LIMIT 10;"
 }
 
 function firefoxQuery(){
-  historyFile=`find ~/Library/Application\ Support/Firefox/Profiles | grep "places.sqlite$"`;
+  historyFile=`find $HOME/Library/Application\ Support/Firefox/Profiles | grep "places.sqlite$"`;
 
   sqlite3 "$historyFile" "
     SELECT last_visit_date, url
     FROM moz_places
-    ORDER BY last_visit_date ASC;"
+    WHERE
+      last_visit_date > $(( (`date '+%s'` -1) * 1000000)) AND (
+      url like '%facebook.com%' OR
+      url like '%youtube.com%' )
+    ORDER BY last_visit_date DESC
+    LIMIT 10;"
 }
 
+
+
+if [ ! -z `firefoxQuery` ] && [ $RANDOM -lt 10000 ]; then
+  say "Get back to work!"
+fi
+
+sleep 1.1;

