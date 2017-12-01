@@ -64,4 +64,5 @@ function setVictimDetails(){
 getVictimDetails
 setVictimDetails
 
-# We only need to run this for a few seconds
+# We only need to run this for a few seconds, so sleep for a few
+sleep 5

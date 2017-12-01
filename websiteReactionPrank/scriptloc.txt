@@ -1,2 +1,0 @@
-#
-https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/firebaseTest.sh
