@@ -5,7 +5,8 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 victim="$1"
 rootIteration="$2"
-firebaseProject="prankproject-cb680"
+
+source "deploy"
 
 iterationFile="$SCRIPTDIR/firebaseTest.iteration"
 if [ ! -e "$iterationFile" ]; then

