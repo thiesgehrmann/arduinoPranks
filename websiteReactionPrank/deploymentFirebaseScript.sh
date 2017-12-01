@@ -153,6 +153,7 @@ if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
   
     timeStart=`date '+%s'`
     while [ $((`date '+%s'` - timeStart)) -lt 15 ]; do
+      echo "Root: Running payload"
       runPayload
       sleep 1
     done
