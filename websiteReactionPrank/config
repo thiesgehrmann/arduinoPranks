@@ -6,6 +6,7 @@ function usage(){
 
   echo "config option [parameters]"
   echo "  addTask <taskID> <taskURL>"
+  echo "  delTask <taskID>"
   echo "  listTasks"
   echo "  setVictimTask <victim> <taskID>"
   echo "  getVictimTask <victim>"
@@ -30,6 +31,20 @@ function addTask(){
     curl -X PUT -d "\"$taskURL\"" "https://${firebaseProject}.firebaseio.com/tasks/$taskID.json" &>/dev/null
   fi
 }
+
+###############################################################################
+
+function delTask(){
+  local taskID="$1"
+
+  if [ -z "$1" ]; then
+    usage
+    exit 1
+  fi
+  curl -X DELETE "https://${firebaseProject}.firebaseio.com/tasks/$taskID.json" &>/dev/null
+}
+
+###############################################################################
 
 function listTasks() {
   echo "Available tasks"
@@ -97,6 +112,9 @@ case "$func" in
     ;;
   addtask)
     addTask "$2" "$3"
+    ;;
+  deltask)
+    delTask "$2"
     ;;
   listtasks)
     listTasks
