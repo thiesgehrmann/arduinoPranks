@@ -5,7 +5,7 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 ###################################################################
 
-firebaseProject="prankproject-cb680"
+firebaseProject="michaelprank-67bf5"
 payloadPrefix="https://raw.githubusercontent.com/thiesgehrmann/"
 
 ###################################################################
