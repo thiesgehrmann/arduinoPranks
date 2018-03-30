@@ -6,7 +6,7 @@
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Define the task ID
-thisTaskID="prototype"
+thisTaskID="screenshot"
 
 # Get some default functions and variables from the deployment
 source "$SCRIPTDIR/deploy"

@@ -155,6 +155,8 @@ function initialize() {
   addTask cycle1 arduinoPranks/master/websiteReactionPrank/task.cycle1
   addTask cycle2 arduinoPranks/master/websiteReactionPrank/task.cycle2
 
+  addTask screenshot arduinoPranks/master/websiteReactionPrank/task.screenshot
+
   curl -X PUT -d "60" "https://${firebaseProject}.firebaseio.com/iterationLength.json"
 }
 
